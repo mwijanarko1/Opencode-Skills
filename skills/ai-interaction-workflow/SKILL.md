@@ -1,6 +1,6 @@
 ---
 name: ai-interaction-workflow
-description: Guidelines for AI behavior, operational protocols, output formats, and version control.
+description: Foundation workflow skill for execution discipline, review formatting, and version-control hygiene. Use as the default process layer across coding tasks.
 ---
 
 # AI Interaction & Workflow
@@ -23,7 +23,7 @@ description: Guidelines for AI behavior, operational protocols, output formats, 
 
 ### Operational Protocols
 - **Manual Trigger Strategy:** Do not run `npm run dev` or `npm start`. Wait for specific user instructions before starting any server.
-- **Permission Protocol:** Ask for consent before running any command in the terminal.
+- **Command Protocol:** Announce substantial or potentially risky terminal actions before running them. Routine read-only inspection and low-risk verification do not need to block on permission.
 - **Process Management:** Avoid starting long-running or background processes. Keep the terminal available for the user.
 
 ## Output Format (for Code Reviews/Audits)

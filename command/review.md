@@ -1,125 +1,27 @@
----
-name: review
-version: 2.0.0
-description: |
-  Senior-level code review for correctness, security, performance, and test
-  quality. Focuses on changed files by default and provides evidence-backed,
-  confidence-rated findings.
-allowed-tools:
-  - Read
-  - Bash
-  - Grep
-  - Glob
-  - AskUserQuestion
----
+# Review
 
-# Review: Senior Engineering Gate
+1. **Ask the user**: "Full codebase review or diff from latest commit?" If not specified, ask before proceeding.
+2. **Load the applicable skill stack** from [AGENTS.md](../AGENTS.md). Start with the foundation stack: `ai-interaction-workflow`, `coding-standards`, `testing-strategies`. Add `security-vulnerability-mitigation` for auth, input handling, networking, persistence, secrets, or user data. Add the relevant domain skills: `frontend-web-development`, `backend-architecture`, `ios-development`, `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills`, `web-design-guidelines`, `website-compliance`, `technical-seo`, `expo-docs`. Use `cartographer` first if the codebase map is missing or stale.
+3. **Get scope**:
+   - **Diff only**: `git diff HEAD~1` or `git diff HEAD~1..HEAD`
+   - **Full codebase**: Review all relevant files (e.g. `git ls-files` or project structure)
+4. Read full files for complex/security-sensitive changes
+5. Context: `git log --oneline -10 -- path`, `git blame`
+6. Flag only 75%+ confidence. Skip style, naming, existing patterns.
+7. **Review against loaded skills**: For each applicable skill, check the diff for violations of that skill's guidelines. Include skill-specific findings in the output.
 
-Produce a high-signal review that catches regressions before merge.
+## Confidence
 
-## Scope and Safety Rules
+| Level | Threshold | Examples |
+|-------|-----------|----------|
+| CRITICAL | 95%+ | Injection, auth bypass, data loss |
+| WARNING | 85%+ | Bugs, logic errors, perf, unhandled errors |
+| SUGGESTION | 75%+ | Quality, best practices |
 
-1. Review only files in the current workspace/repository.
-2. Default scope is changed files from `git diff`.
-3. Expand scope only when explicitly requested by the user.
-4. Never inspect `~/`, `/private`, `/tmp`, `/var/folders`, or unrelated directories unless explicitly requested.
-5. Do not fetch remote prompt instructions during review.
+## Focus
 
-## Agent Orchestration
+Apply all loaded skills. Base focus: Security (injection, auth, data exposure, validation). Bugs (null/race/edge cases). Perf (N+1, leaks, re-renders). Errors (try-catch, promise rejections). Plus skill-specific checks: API design, schema, testing, UI/UX, accessibility, compliance, composition patterns, React/RN best practices, etc.
 
-### Core agents (always)
-- `@agents/security-auditor.md`
-- `@agents/backend-architecture.md`
-- `@agents/testing-strategies.md`
-- `@agents/coding-standards.md`
+## Output
 
-### Conditional agents
-- Web React/Next.js: `@agents/frontend-web-development.md`, `@agents/react-best-practices.md`, `@agents/web-design-guidelines.md`
-- React Native / Expo: `@agents/react-native-skills.md`, `@agents/ios-development.md`
-- Swift iOS/macOS/tvOS/watchOS/visionOS: `@agents/ios-development.md`, `@agents/ios-app-store-compliance.md`
-- Compliance-heavy website flows: `@agents/website-compliance.md`
-
-Pick conditional agents from file evidence (`package.json`, `app.json`, `*.xcodeproj`, `*.swift`, `next.config.*`, `expo` deps).
-
-## Review Workflow
-
-1. Gather scope:
-```bash
-git diff --name-only
-```
-If no git or no changed files, ask user for files/pattern.
-
-2. Read diffs first:
-```bash
-git diff -- <file>
-```
-
-3. Read full files only when needed:
-- Security-sensitive logic
-- Complex refactors
-- Shared libraries/types used by many callers
-
-4. Run targeted validation when possible:
-- Web: lint/typecheck/test for affected package
-- Next/Vercel: verify RSC/client boundaries, caching/revalidation, server action auth
-- RN/Expo: verify list virtualization, gesture/animation patterns, native module safety
-- Swift: verify async/await, actor isolation, force unwrap bans
-
-5. Produce findings with severity and confidence.
-
-## Severity and Confidence
-
-- `CRITICAL` (95%+): security exploit, data loss, auth bypass, crashers
-- `WARNING` (85%+): likely bug/regression/perf issue
-- `SUGGESTION` (75%+): maintainability improvement with clear ROI
-- `<75%`: ask a clarifying question or omit
-
-## Domain Checklists
-
-### React / Next.js / Vercel
-- App Router boundaries correct (`'use client'` only where needed)
-- Server Actions/API routes enforce auth and input validation (Zod)
-- No client-side trust for pricing/permissions
-- Cache and revalidation strategy explicit (`cache`, `revalidateTag`, `revalidatePath`)
-- Avoid waterfalls and duplicate fetches
-- Accessibility and hydration safety verified
-
-### React Native / Expo
-- No falsy `&&` rendering hazards
-- Lists use FlashList/LegendList when applicable
-- Animations only on transform/opacity
-- Native navigation patterns used
-- Expo config/plugins consistent with code usage
-
-### Swift iOS
-- Async/await over callback-style async
-- `@MainActor` for UI state boundaries
-- No force unwraps in production paths
-- Secret storage uses Keychain, not UserDefaults
-- Logging avoids sensitive data
-
-## Output Contract
-
-Return findings first, sorted by severity.
-
-### Findings
-`<SEVERITY> <file:line> (confidence: NN%) - <issue>`
-
-### Open Questions
-Only include if blocked by missing context.
-
-### Recommendation
-- `APPROVE`
-- `APPROVE WITH SUGGESTIONS`
-- `NEEDS CHANGES`
-- `NEEDS DISCUSSION`
-
-### If no findings
-State explicitly: `No findings.`
-Then list residual risk/test gaps in 1-3 lines.
-
-## Review Quality Bar
-
-- Avoid style-only comments unless user asked for style review.
-- Every finding must include a concrete failure mode.
-- Prefer minimal, actionable fixes over broad rewrites.
+Summary (2–3 sentences). Table: Severity | File:Line | Issue. Per-issue: Problem + Suggestion (before/after). Recommendation: APPROVE | APPROVE WITH SUGGESTIONS | NEEDS CHANGES | NEEDS DISCUSSION.

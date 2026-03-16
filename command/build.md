@@ -1,110 +1,30 @@
----
-name: build
-version: 2.0.0
-description: |
-  Production-grade build and verification workflow for web and mobile projects.
-  Prioritizes deterministic checks (lint, typecheck, tests, build) and fixes root
-  causes before reporting success.
-allowed-tools:
-  - Read
-  - Bash
-  - Grep
-  - Glob
-  - AskUserQuestion
----
+# Build
 
-# Build: Senior Verification Pipeline
+## 1. Detect package manager
 
-Use this command to verify production readiness, not just compile output.
+Check lock files (first match wins): `bun.lockb`/`bun.lock` → `pnpm-lock.yaml` → `yarn.lock` → `package-lock.json`. Default: npm.
 
-## Rules
+| pm | build | install | ncu |
+|----|-------|---------|-----|
+| bun | `bun run build` | `bun install` | `bunx npm-check-updates` |
+| pnpm | `pnpm run build` | `pnpm install` | `pnpm exec npm-check-updates` |
+| yarn | `yarn build` | `yarn install` | `npx npm-check-updates` |
+| npm | `npm run build` | `npm install` | `npx npm-check-updates` |
 
-1. Do not update dependencies unless the user explicitly asks.
-2. Prefer deterministic checks over ad-hoc fixes.
-3. If a command is missing, report it and continue with available checks.
-4. Keep scope to current workspace unless user requests otherwise.
+Use same pm for all commands.
 
-## Stack Detection
+## 2. Flow
 
-Use repository signals to select checks:
-- Next.js/React web: `next`, `react`, `app/`, `src/app/`
-- React Native / Expo: `react-native`, `expo`, `app.json`, `eas.json`
-- Swift iOS: `*.xcodeproj`, `Package.swift`, `*.swift`
+1. Run build → fix errors → run `ncu` → if updates: `ncu -u` + install + rebuild
+2. On success: offer to commit (`git add -A`, `git commit -m "<message>"`, `git push`). Message reflects what changed (e.g. build fixes, dep updates, both).
 
-## Build Workflow
+## 3. Quick fixes
 
-### 1) Fast preflight
+- **Cannot find module:** `pm install <pkg>` or fix import
+- **TS errors:** Fix types, update tsconfig
+- **OOM:** `NODE_OPTIONS="--max-old-space-size=4096" pm run build`
+- **Missing env:** Check .env.example, set vars
 
-- Verify package manager/lockfile consistency.
-- Inspect available scripts before running commands.
+## 4. Output
 
-Node example:
-```bash
-cat package.json
-```
-
-### 2) Run verification gates
-
-#### Web (React / Next.js / Vercel)
-Run in this order when present:
-```bash
-npm run lint --if-present
-npm run typecheck --if-present
-npm run test --if-present
-npm run build --if-present
-```
-
-Additional Vercel-focused checks when available:
-```bash
-npx vercel build
-```
-
-#### React Native / Expo
-Run in this order when present:
-```bash
-npm run lint --if-present
-npm run typecheck --if-present
-npm run test --if-present
-npx expo-doctor
-npx expo export --platform all
-```
-
-#### Swift iOS
-Prefer project-provided scripts first. If none exist, use xcodebuild if available:
-```bash
-xcodebuild -list
-xcodebuild -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 15' build
-xcodebuild -scheme <Scheme> -destination 'platform=iOS Simulator,name=iPhone 15' test
-```
-
-### 3) Fix failures
-
-- Diagnose root cause from logs.
-- Apply minimal targeted code/config fix.
-- Re-run the failed gate and downstream gates.
-
-### 4) Report
-
-Report exactly what ran and outcomes.
-
-## Output Format
-
-### Build Status
-`PASS` or `FAIL`
-
-### Commands Run
-- `<command>` - pass/fail/skipped
-
-### Issues Fixed
-- `<file>` - `<summary>`
-
-### Remaining Risks
-- Missing gates, unavailable tools, or unexecuted tests
-
-## Senior Quality Bar
-
-A build is only `PASS` when:
-- Required gates for detected stack have passed, or
-- Any skipped gate has an explicit reason and risk note.
-
-If this bar is not met, return `FAIL` with next required action.
+Status, errors (if any), updated deps (if any), next steps.

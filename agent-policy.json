@@ -1,0 +1,196 @@
+{
+  "version": 2,
+  "environment": "shared",
+  "root": "/Users/mikhail/.agents",
+  "docs_required": [
+    "AGENTS.md",
+    "docs/CODEBASE_MAP.md"
+  ],
+  "skills_dir": "skills",
+  "skills_root": "/Users/mikhail/.agents/skills",
+
+  "default_stack": {
+    "always": ["ai-interaction-workflow", "coding-standards", "testing-strategies"],
+    "skip_when": "task clearly does not need them"
+  },
+
+  "skill_triggers": {
+    "security-vulnerability-mitigation": {
+      "add_when": ["auth", "input_handling", "networking", "persistence", "secrets", "user_data"],
+      "condition": "task touches any of these"
+    }
+  },
+
+  "task_mapping": {
+    "web": {
+      "required": ["frontend-web-development"],
+      "add_when": {
+        "backend-architecture": ["server_logic", "apis"],
+        "vercel-react-best-practices": ["react_performance", "nextjs_performance"],
+        "vercel-composition-patterns": ["component_apis", "reusable_primitives"]
+      }
+    },
+    "mobile": {
+      "required": [],
+      "add_when": {
+        "ios-development": ["swift", "swiftui"],
+        "ios-app-store-compliance": ["app_store_review", "submission_readiness"],
+        "vercel-react-native-skills": ["react_native", "expo"],
+        "expo-docs": ["expo_apis", "expo_behavior"],
+        "swiftui-pro": ["swiftui_review", "swiftui_code"],
+        "swiftdata-pro": ["swiftdata", "model", "persistence", "icloud_sync"],
+        "swift-concurrency-pro": ["async", "await", "actors", "sendable", "concurrency"],
+        "swift-testing-pro": ["swift_testing", "tests", "swift_tests"]
+      },
+      "ios_bundle": {
+        "description": "Load all iOS/Swift skills together for full-stack native Apple development",
+        "trigger": ["ios_full_stack", "all_ios_skills", "swift_native_full", "apple_platform_full"],
+        "skills": [
+          "ios-development",
+          "ios-app-store-compliance",
+          "swiftui-pro",
+          "swiftdata-pro",
+          "swift-concurrency-pro",
+          "swift-testing-pro",
+          "add-component",
+          "build-feature",
+          "explore-recipes"
+        ]
+      }
+    },
+    "review_audit": {
+      "add_when": {
+        "web-design-guidelines": ["ui_review"],
+        "website-compliance": ["privacy", "legal", "consumer_protection", "accessibility_obligations"],
+        "technical-seo": ["crawlability", "search_performance"]
+      }
+    },
+    "design": {
+      "primary_exactly_one": ["taste-skill", "redesign-skill"],
+      "primary_triggers": {
+        "taste-skill": ["net_new_interface", "greenfield_ui"],
+        "redesign-skill": ["improve_existing_ui", "upgrade_interface"]
+      },
+      "secondary": {
+        "soft-skill": {
+          "only_after": ["taste-skill", "redesign-skill"],
+          "never_alone": true
+        }
+      }
+    }
+  },
+
+  "conflict_resolution": [
+    {"priority": 1, "rule": "prefer_more_specific_over_general"},
+    {"priority": 2, "rule": "prefer_implementation_for_building_audit_for_review_finish_for_polish"},
+    {"priority": 3, "rule": "overlap_keep_narrower_trigger_use_broader_for_gaps"},
+    {"priority": 4, "rule": "visual_design_never_overrides", "overrides_forbidden": ["accessibility", "security", "functional_correctness"]}
+  ],
+
+  "codebase_awareness": {
+    "check_paths": ["docs/CODEBASE_MAP.md", "CODEBASE_MAP.md"],
+    "if_missing": {"action": "use_cartographer", "create_before": "substantial_changes"},
+    "if_present": {"action": "review_before_editing"}
+  },
+
+  "core_principles": [
+    {"id": "simplicity_first", "rule": "smallest_change_that_fully_solves"},
+    {"id": "no_laziness", "rule": "find_root_causes_no_papering_over"},
+    {"id": "minimal_impact", "rule": "touch_only_what_materially_needs_change"}
+  ],
+
+  "delegation": {
+    "delegate_by": "task_intent",
+    "delegate_by_not": "skill_name",
+    "max_implementation_specialists": 1,
+    "optional_auditor": true,
+    "one_subagent_per_skill": false,
+    "capability_clusters_only": true
+  },
+
+  "shared_skills": [
+    "ai-interaction-workflow",
+    "backend-architecture",
+    "cartographer",
+    "coding-standards",
+    "expo-docs",
+    "frontend-web-development",
+    "ios-app-store-compliance",
+    "ios-development",
+    "output-skill",
+    "redesign-skill",
+    "security-vulnerability-mitigation",
+    "soft-skill",
+    "swift-concurrency-pro",
+    "swift-testing-pro",
+    "swiftdata-pro",
+    "swiftui-pro",
+    "taste-skill",
+    "technical-seo",
+    "testing-strategies",
+    "vercel-composition-patterns",
+    "vercel-react-best-practices",
+    "vercel-react-native-skills",
+    "web-design-guidelines",
+    "website-compliance"
+  ],
+  "ambient_skills": ["ai-interaction-workflow", "coding-standards", "testing-strategies", "output-skill"],
+  "subagents": {
+    "enabled": true,
+    "directory": "agents",
+    "required": [
+      "backend-architect",
+      "cartographer",
+      "code-reviewer",
+      "compliance-seo-auditor",
+      "design-engineer",
+      "frontend-engineer",
+      "mobile-engineer",
+      "security-auditor",
+      "ui-auditor"
+    ],
+    "frontmatter_keys": ["name", "description"]
+  },
+  "capability_clusters": {
+    "backend-architect": {
+      "mode": "implementation",
+      "skills": ["backend-architecture", "security-vulnerability-mitigation", "testing-strategies", "coding-standards"]
+    },
+    "cartographer": {"mode": "audit", "skills": ["cartographer"]},
+    "code-reviewer": {"mode": "audit", "skills": ["ai-interaction-workflow", "coding-standards", "testing-strategies"]},
+    "compliance-seo-auditor": {"mode": "audit", "skills": ["website-compliance", "technical-seo", "web-design-guidelines"]},
+    "design-engineer": {
+      "mode": "implementation",
+      "skills": ["taste-skill", "redesign-skill", "soft-skill", "frontend-web-development", "web-design-guidelines"]
+    },
+    "frontend-engineer": {
+      "mode": "implementation",
+      "skills": ["frontend-web-development", "vercel-react-best-practices", "vercel-composition-patterns", "web-design-guidelines", "coding-standards", "testing-strategies"]
+    },
+    "mobile-engineer": {
+      "mode": "implementation",
+      "skills": [
+        "ios-development",
+        "ios-app-store-compliance",
+        "swiftui-pro",
+        "swiftdata-pro",
+        "swift-concurrency-pro",
+        "swift-testing-pro",
+        "vercel-react-native-skills",
+        "expo-docs",
+        "coding-standards",
+        "testing-strategies"
+      ]
+    },
+    "security-auditor": {"mode": "audit", "skills": ["security-vulnerability-mitigation", "backend-architecture", "website-compliance"]},
+    "ui-auditor": {"mode": "audit", "skills": ["web-design-guidelines", "frontend-web-development", "coding-standards"]}
+  },
+  "sync": {
+    "peer_roots": [
+      {"name": "cursor", "root": "/Users/mikhail/.cursor", "skills_dir": "skills", "subagents": {"enabled": true, "directory": ".cursor/agents"}},
+      {"name": "opencode", "root": "/Users/mikhail/.config/opencode", "skills_dir": "skills", "subagents": {"enabled": true, "directory": "agents"}},
+      {"name": "codex", "root": "/Users/mikhail/.codex", "skills_dir": "skills", "subagents": {"enabled": false, "directory": null}},
+      {"name": "antigravity", "root": "/Users/mikhail/.gemini/antigravity", "skills_dir": "skills", "subagents": {"enabled": true, "directory": ".cursor/agents"}}
+    ]
+  }
+}

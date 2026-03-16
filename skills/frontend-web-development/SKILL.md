@@ -1,104 +1,264 @@
 ---
 name: frontend-web-development
-description: Senior web standards for React + Next.js on Vercel.
+description: Primary web implementation skill for Next.js and frontend delivery. Use for building features and shipping UI. Pair with audit or design-finish skills when needed.
 ---
 
-# Frontend Web Development (Senior)
+# Web & Frontend Stack
 
-Use this skill for React and Next.js implementation/review with production deployment on Vercel.
+## Scope
 
-## Core Engineering Defaults
+Use this skill for implementation and architecture of web features.
 
-1. **Server-first:** Use React Server Components by default. Add `'use client'` only for true client interactivity.
-2. **Trusted backend:** Never rely on client-side state for authorization, pricing, or feature gating.
-3. **Typed boundaries:** Validate all external inputs at boundaries (Route Handlers, Server Actions, webhooks).
-4. **Small blast radius:** Prefer minimal diffs and localized changes over large refactors.
+- Pair with `vercel-react-best-practices` for React and Next.js performance work.
+- Pair with `vercel-composition-patterns` when designing reusable component APIs.
+- Pair with `web-design-guidelines` for UI review and accessibility audits.
+- Pair with `taste-skill` for new premium UI or `redesign-skill` for upgrading existing UI.
+- Do not use this skill as the sole source of legal, compliance, or SEO guidance.
 
-## Next.js App Router Standards
+## Project Setup Guidelines
 
-### Structure
+### Directory Structure (Next.js App Router)
+Enforce `src/` directory. Use Feature-First (Screaming) Architecture to colocate related logic.
 
 ```text
 src/
-  app/
-    (routes)/
-    api/
-  features/
-  components/
-  lib/
+├── app/                 # Next.js App Router (Routes & Layouts ONLY)
+│   ├── (auth)/          # Route groups for organization
+│   ├── api/             # API routes
+│   └── layout.tsx
+├── features/            # Business Logic (Domain-driven)
+│   ├── [feature-name]/
+│   │   ├── components/  # Feature-specific components
+│   │   ├── hooks/       # Feature-specific hooks
+│   │   ├── services/    # Data fetching/Server Actions
+│   │   └── types/       # Feature-specific types
+├── components/          # Shared/Generic Components
+│   ├── ui/              # ShadCN primitives (buttons, inputs)
+│   └── layout/          # Global layout (nav, footer)
+├── lib/                 # Shared Utilities
+│   ├── db.ts            # DB connection
+│   └── utils.ts         # Helper functions
+├── types/               # Global TypeScript definitions
+└── env/                 # Environment validation schemas
 ```
 
-- Keep route handlers thin; move business logic to services.
-- Co-locate feature components/hooks/types.
-- Avoid dumping logic in `app/` leaf files.
+### Dependency Management
+- **Package Manager:** Use `npm` or `pnpm` consistently.
+- **Lockfile:** Always commit `package-lock.json` or `pnpm-lock.yaml`.
+- **Versioning:**
+  - Pin exact versions for core deps (remove `^` or `~`).
+  - Use semantic versioning for utilities.
+- **Vetting:**
+  - Prefer packages with >1k stars and recent updates.
+  - Audit size with `bundle-phobia` before adding.
+- **Separation:** Strictly separate `dependencies` vs `devDependencies`.
 
-### Data Fetching and Caching
+### Environment Variables
+- **Validation:** Use Zod or T3 Env to validate all env vars at build/runtime.
+- **Template:** Maintain an up-to-date `.env.example` with dummy values.
+- **Naming:**
+  - Server-only: `DB_PASSWORD`, `API_SECRET`
+  - Client-exposed: `NEXT_PUBLIC_API_URL`
+- **Security:**
+  - Never commit `.env` files.
+  - Add `.env*` to `.gitignore` (except `.env.example`).
 
-- Start async work early and avoid waterfalls.
-- Use cache/revalidation intentionally:
-  - request memoization
-  - `revalidateTag` and `revalidatePath` for write paths
-  - explicit cache/no-store decisions for sensitive data
-- Do not over-fetch or serialize unnecessary data into client components.
+## Frontend Development Guidelines
 
-### Server Actions and API Routes
+### UI/UX Principles
+- **Mobile-First Design:** Implement styles for mobile viewports first, then use `sm:`, `md:`, `lg:` breakpoints for larger screens.
+- **Feedback Loops:** Provide immediate visual feedback for all interactions.
+  - *Active:* Button press states.
+  - *Loading:* Skeleton loaders (ShadCN `Skeleton`) preferred over spinners for initial page loads.
+  - *Outcome:* Toast notifications (`sonner`/`toast`) for success/error events.
+- **Layout Stability:** Prevent Cumulative Layout Shift (CLS) by defining explicit dimensions for images and reserving space for async content.
+- **Touch Targets:** Ensure interactive elements are at least 44x44px for mobile accessibility.
 
-- Authenticate and authorize every mutating operation.
-- Validate request payloads with Zod (or equivalent schema).
-- Return consistent typed error shapes.
-- Enforce idempotency for retried mutations where applicable.
+### Accessibility (A11y)
+- **Standard:** Target WCAG 2.1 Level AA compliance.
+- **Semantic HTML:** Use native elements (`<button>`, `<a>`, `<input>`) over `div` soups. Never use `onClick` on non-interactive elements without `role` and `tabIndex`.
+- **Keyboard Navigation:** Ensure visible focus states (`ring-offset`, `focus-visible`) on all interactive elements. No keyboard traps.
+- **Screen Readers:**
+  - Use `aria-label` for icon-only buttons.
+  - Ensure form inputs have associated `<label>` elements.
+  - Use `sr-only` class for text that should be hidden visually but available to screen readers.
+- **Color Contrast:** Verify text/background ratios meet 4.5:1 standard.
 
-## React Quality Standards
+### State Management
+- **URL as Source of Truth:** Store filter, pagination, and sort parameters in the URL (`searchParams`) rather than local state to enable shareable/bookmarkable links.
+- **Server vs. Client:**
+  - Prefer Server Components for fetching.
+  - Use `React Query` (or equivalent) only if polling or client-side caching is strictly necessary.
+- **Local State:** Use `useState` for simple, ephemeral UI state (modals, inputs).
+- **Zustand/Context:** Reserve for truly global app state (user preferences, authentication tokens). Avoid "Context Hell."
 
-- No unnecessary global state; prefer local state + URL state.
-- Avoid broad context subscriptions that trigger avoidable rerenders.
-- Keep expensive computation out of render hot paths.
-- Prefer composition over boolean-prop branching APIs.
+### Component Reusability
+- **Atomic Design:** Build from primitives (Buttons, Inputs) -> Molecules (Form Groups) -> Organisms (Tables, Cards).
+- **Styling Composition:**
+  - Use `clsx` and `tailwind-merge` (`cn()` utility) to allow parent components to safely override/extend child styles.
+  - Avoid hardcoding margins/positioning on the component itself; let the parent control layout.
+- **Variant Management:** Use `class-variance-authority` (CVA) to define type-safe component variants (e.g., `variant="outline"`, `size="sm"`).
+- **Slot Pattern:** Use `Radix UI` Slot primitive (via ShadCN `asChild`) to allow components to change their underlying HTML tag (polymorphism) while maintaining styles.
 
-## Accessibility and UX
+## Implementation Checks
 
-Minimum bar:
-- Semantic elements for interaction (`button`, `a`, `label`).
-- Icon-only controls require `aria-label`.
-- Focus-visible styles present and obvious.
-- Forms have labels, inline errors, and keyboard usability.
-- Respect `prefers-reduced-motion`.
+These are build-time checks. For review-heavy UI audits, use `web-design-guidelines` as the primary audit skill.
 
-## Performance Standards (Vercel-oriented)
+### Accessibility
+- Icon-only buttons need `aria-label`
+- Form controls need `<label>` or `aria-label`
+- Interactive elements need keyboard handlers (`onKeyDown`/`onKeyUp`)
+- `<button>` for actions, `<a>`/`<Link>` for navigation (not `<div onClick>`)
+- Images need `alt` (or `alt=""` if decorative)
+- Decorative icons need `aria-hidden="true"`
+- Async updates (toasts, validation) need `aria-live="polite"`
+- Use semantic HTML (`<button>`, `<a>`, `<label>`, `<table>`) before ARIA
+- Headings hierarchical `<h1>`–`<h6>`; include skip link for main content
+- `scroll-margin-top` on heading anchors
 
-- Use `next/image` with explicit dimensions.
-- Use dynamic imports for heavy client-only modules.
-- Keep third-party scripts non-blocking.
-- Prevent hydration mismatches (date/time, random values, browser-only state).
-- Avoid duplicate fetching and duplicate serialization to client.
+### Focus States
+- Interactive elements need visible focus: `focus-visible:ring-*` or equivalent
+- Never `outline-none` / `outline: none` without focus replacement
+- Use `:focus-visible` over `:focus` (avoid focus ring on click)
+- Group focus with `:focus-within` for compound controls
 
-## Security Standards
+### Forms
+- Inputs need `autocomplete` and meaningful `name`
+- Use correct `type` (`email`, `tel`, `url`, `number`) and `inputmode`
+- Never block paste (`onPaste` + `preventDefault`)
+- Labels clickable (`htmlFor` or wrapping control)
+- Disable spellcheck on emails, codes, usernames (`spellCheck={false}`)
+- Checkboxes/radios: label + control share single hit target (no dead zones)
+- Submit button stays enabled until request starts; spinner during request
+- Errors inline next to fields; focus first error on submit
+- Placeholders end with `…` and show example pattern
+- `autocomplete="off"` on non-auth fields to avoid password manager triggers
+- Warn before navigation with unsaved changes (`beforeunload` or router guard)
 
-- Never expose secrets in client bundles.
-- Use server-side checks for entitlements and role access.
-- Sanitize error responses; avoid leaking internals.
-- Use secure cookie/session handling patterns.
+### Animation
+- Honor `prefers-reduced-motion` (provide reduced variant or disable)
+- Animate `transform`/`opacity` only (compositor-friendly)
+- Never `transition: all`—list properties explicitly
+- Set correct `transform-origin`
+- SVG: transforms on `<g>` wrapper with `transform-box: fill-box; transform-origin: center`
+- Animations interruptible—respond to user input mid-animation
 
-## Testing and Verification
+### Typography
+- `…` not `...`
+- Curly quotes `"` `"` not straight `"`
+- Non-breaking spaces: `10&nbsp;MB`, `⌘&nbsp;K`, brand names
+- Loading states end with `…`: `"Loading…"`, `"Saving…"`
+- `font-variant-numeric: tabular-nums` for number columns/comparisons
+- Use `text-wrap: balance` or `text-pretty` on headings (prevents widows)
 
-Before completion, run available gates:
-```bash
-npm run lint --if-present
-npm run typecheck --if-present
-npm run test --if-present
-npm run build --if-present
-```
+### Content Handling
+- Text containers handle long content: `truncate`, `line-clamp-*`, or `break-words`
+- Flex children need `min-w-0` to allow text truncation
+- Handle empty states—don't render broken UI for empty strings/arrays
+- User-generated content: anticipate short, average, and very long inputs
 
-For critical paths, add or update:
-- integration tests for data/auth flows
-- UI tests for key user interactions
+### Images
+- `<img>` needs explicit `width` and `height` (prevents CLS)
+- Below-fold images: `loading="lazy"`
+- Above-fold critical images: `priority` or `fetchpriority="high"`
 
-## Review Checklist
+### Performance & Hydration
+- **Performance:**
+  - Large lists (>50 items): virtualize (`virtua`, `content-visibility: auto`)
+  - No layout reads in render (`getBoundingClientRect`, `offsetHeight`, `offsetWidth`, `scrollTop`)
+  - Batch DOM reads/writes; avoid interleaving
+  - Prefer uncontrolled inputs; controlled inputs must be cheap per keystroke
+  - Add `<link rel="preconnect">` for CDN/asset domains
+  - Critical fonts: `<link rel="preload" as="font">` with `font-display: swap`
+- **Hydration Safety:**
+  - Inputs with `value` need `onChange` (or use `defaultValue` for uncontrolled)
+  - Date/time rendering: guard against hydration mismatch (server vs client)
+  - `suppressHydrationWarning` only where truly needed
 
-Flag issues when confidence is high and impact is clear:
-- auth/permission bypass
-- input validation gaps
-- data consistency bugs
-- unnecessary client bundle growth
-- accessibility regressions
-- missing tests for changed behavior
+### Navigation & State
+- URL reflects state—filters, tabs, pagination, expanded panels in query params
+- Links use `<a>`/`<Link>` (Cmd/Ctrl+click, middle-click support)
+- Deep-link all stateful UI (if uses `useState`, consider URL sync via nuqs or similar)
+- Destructive actions need confirmation modal or undo window—never immediate
+
+### Touch & Interaction
+- `touch-action: manipulation` (prevents double-tap zoom delay)
+- `-webkit-tap-highlight-color` set intentionally
+- `overscroll-behavior: contain` in modals/drawers/sheets
+- During drag: disable text selection, `inert` on dragged elements
+- `autoFocus` sparingly—desktop only, single primary input; avoid on mobile
+
+### Safe Areas & Layout
+- Full-bleed layouts need `env(safe-area-inset-*)` for notches
+- Avoid unwanted scrollbars: `overflow-x-hidden` on containers, fix content overflow
+- Flex/grid over JS measurement for layout
+
+### Dark Mode & Theming
+- `color-scheme: dark` on `<html>` for dark themes (fixes scrollbar, inputs)
+- `<meta name="theme-color">` matches page background
+- Native `<select>`: explicit `background-color` and `color` (Windows dark mode)
+
+### Locale & i18n
+- Dates/times: use `Intl.DateTimeFormat` not hardcoded formats
+- Numbers/currency: use `Intl.NumberFormat` not hardcoded formats
+- Detect language via `Accept-Language` / `navigator.languages`, not IP
+
+### Content & Copy
+- Active voice: "Install the CLI" not "The CLI will be installed"
+- Title Case for headings/buttons (Chicago style)
+- Numerals for counts: "8 deployments" not "eight"
+- Specific button labels: "Save API Key" not "Continue"
+- Error messages include fix/next step, not just problem
+- Second person; avoid first person
+- `&` over "and" where space-constrained
+
+### Anti-patterns (flag these)
+- `user-scalable=no` or `maximum-scale=1` disabling zoom
+- `onPaste` with `preventDefault`
+- `transition: all`
+- `outline-none` without focus-visible replacement
+- Inline `onClick` navigation without `<a>`
+- `<div>` or `<span>` with click handlers (should be `<button>`)
+- Images without dimensions
+- Large arrays `.map()` without virtualization
+- Form inputs without labels
+- Icon buttons without `aria-label`
+- Hardcoded date/number formats (use `Intl.*`)
+- `autoFocus` without clear justification
+
+## Performance Optimization Guidelines
+
+### Asset Loading & Bundle Size
+- **Images:**
+  - Mandate `next/image` for automatic optimization (WebP/AVIF conversion).
+  - Explicitly set `width` and `height` (or `fill` with parent aspect ratio) to prevent Layout Shifts (CLS).
+  - Set `priority={true}` ONLY for the Largest Contentful Paint (LCP) element (e.g., hero image); lazy load all others.
+- **Code Splitting:**
+  - Use `next/dynamic` to lazy load heavy components (charts, maps, rich text editors) that are below the fold.
+  - Implement Route-based code splitting (default in Next.js).
+- **Fonts:**
+  - Use `next/font` to host fonts locally at build time.
+  - Enforce `display: swap` or `optional` to prevent blocking text rendering.
+- **Scripts:**
+  - Use `next/script` with appropriate strategies (`lazyOnload` for analytics, `worker` for heavy computations).
+
+### Caching Strategy
+- **Hierarchy:**
+  1. **Browser/CDN:** Use `Cache-Control` headers. Implement `stale-while-revalidate` for high-availability content.
+  2. **Next.js Data Cache:** Memoize fetch requests. Use `revalidateTag` (On-Demand Revalidation) over time-based revalidation for cleaner data consistency.
+  3. **Memoization:** Deduplicate identical fetch requests within a single render pass using React `cache()`.
+- **Database Caching:** Implement a Redis/KV layer for expensive aggregation queries that update infrequently.
+- **Static vs Dynamic:** Prefer Static Site Generation (SSG/ISR) for marketing pages. Use Partial Prerendering (PPR) where applicable.
+
+### Database Query Optimization
+- **N+1 Prevention:**
+  - Strictly prohibit N+1 query patterns. Use `JOIN`s, `include` (ORM), or Dataloader patterns to batch requests.
+- **Selectivity:**
+  - Ban `SELECT *`. Explicitly select only required columns to reduce network payload and memory usage.
+- **Indexing:**
+  - Enforce indexes on all columns used in `WHERE`, `ORDER BY`, and Foreign Key joins.
+  - Review `EXPLAIN ANALYZE` output for any query taking >100ms.
+- **Pagination:**
+  - Implement Cursor-based pagination (keyset) for infinite scroll or large datasets (performance O(1)).
+  - Avoid Offset-based pagination for tables with >10k rows (performance O(N)).
+- **Connection Pooling:** Ensure a connection pooler (e.g., PgBouncer) is configured for serverless environments to prevent connection exhaustion.
