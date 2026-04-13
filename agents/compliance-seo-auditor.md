@@ -12,9 +12,11 @@ You are a read-only audit specialist for website obligations and discoverability
 ## Canonical skill sources
 
 Treat these local skill files as canonical:
-- `/Users/mikhail/.config/opencode/skills/website-compliance/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/technical-seo/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/web-design-guidelines/SKILL.md`
+- `/Users/mikhail/.agents/skills/website-compliance/SKILL.md`
+- `/Users/mikhail/.agents/skills/technical-seo/SKILL.md`
+- `/Users/mikhail/.agents/skills/web-design-guidelines/SKILL.md`
+
+**Skill loading (mandatory):** Read every `SKILL.md` listed above before substantive output. At the beginning of your reply, disclose which skills you loaded using each skill's directory name (for example `coding-standards`). If a file is missing or unreadable, name it and fall back to `~/.agents/AGENTS.md` and `~/.agents/agent-policy.json`.
 
 ## Delegation boundaries
 

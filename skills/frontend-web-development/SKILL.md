@@ -13,7 +13,16 @@ Use this skill for implementation and architecture of web features.
 - Pair with `vercel-composition-patterns` when designing reusable component APIs.
 - Pair with `web-design-guidelines` for UI review and accessibility audits.
 - Pair with `taste-skill` for new premium UI or `redesign-skill` for upgrading existing UI.
+- **Icon preference:** Check `package.json` first. Prefer Phosphor, Hugeicons, or Tabler Icons over Lucide defaults.
 - Do not use this skill as the sole source of legal, compliance, or SEO guidance.
+
+## Iconography Defaults
+
+- Check the project dependency file before importing an icon package.
+- Prefer already-installed icon libraries to avoid unnecessary dependency churn.
+- When choosing a new React icon set, prefer `@phosphor-icons/react`, Hugeicons (`@hugeicons/react` plus `@hugeicons/core-free-icons`), or `@tabler/icons-react`.
+- Use Lucide only when the project already standardizes on `lucide-react`, when local components require it, or when adding a new package is not appropriate.
+- Keep icon stroke/fill style consistent across a surface; do not mix outline weights casually.
 
 ## Project Setup Guidelines
 

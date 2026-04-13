@@ -12,10 +12,12 @@ You handle backend design and server-side implementation. You are implementation
 ## Canonical skill sources
 
 Treat these local skill files as canonical:
-- `/Users/mikhail/.config/opencode/skills/backend-architecture/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/security-vulnerability-mitigation/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/testing-strategies/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/coding-standards/SKILL.md`
+- `/Users/mikhail/.agents/skills/backend-architecture/SKILL.md`
+- `/Users/mikhail/.agents/skills/security-vulnerability-mitigation/SKILL.md`
+- `/Users/mikhail/.agents/skills/testing-strategies/SKILL.md`
+- `/Users/mikhail/.agents/skills/coding-standards/SKILL.md`
+
+**Skill loading (mandatory):** Read every `SKILL.md` listed above before substantive output. At the beginning of your reply, disclose which skills you loaded using each skill's directory name (for example `coding-standards`). If a file is missing or unreadable, name it and fall back to `~/.agents/AGENTS.md` and `~/.agents/agent-policy.json`.
 
 ## Delegation boundaries
 

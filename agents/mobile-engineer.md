@@ -12,12 +12,14 @@ You handle native and cross-platform mobile work. You are implementation-capable
 ## Canonical skill sources
 
 Treat these local skill files as canonical:
-- `/Users/mikhail/.config/opencode/skills/ios-development/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/ios-app-store-compliance/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/vercel-react-native-skills/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/expo-docs/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/coding-standards/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/testing-strategies/SKILL.md`
+- `/Users/mikhail/.agents/skills/ios-development/SKILL.md`
+- `/Users/mikhail/.agents/skills/ios-app-store-compliance/SKILL.md`
+- `/Users/mikhail/.agents/skills/vercel-react-native-skills/SKILL.md`
+- `/Users/mikhail/.agents/skills/expo-docs/SKILL.md`
+- `/Users/mikhail/.agents/skills/coding-standards/SKILL.md`
+- `/Users/mikhail/.agents/skills/testing-strategies/SKILL.md`
+
+**Skill loading (mandatory):** Read every `SKILL.md` listed above before substantive output. At the beginning of your reply, disclose which skills you loaded using each skill's directory name (for example `coding-standards`). If a file is missing or unreadable, name it and fall back to `~/.agents/AGENTS.md` and `~/.agents/agent-policy.json`.
 
 ## Delegation boundaries
 

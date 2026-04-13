@@ -36,26 +36,7 @@
         "ios-development": ["swift", "swiftui"],
         "ios-app-store-compliance": ["app_store_review", "submission_readiness"],
         "vercel-react-native-skills": ["react_native", "expo"],
-        "expo-docs": ["expo_apis", "expo_behavior"],
-        "swiftui-pro": ["swiftui_review", "swiftui_code"],
-        "swiftdata-pro": ["swiftdata", "model", "persistence", "icloud_sync"],
-        "swift-concurrency-pro": ["async", "await", "actors", "sendable", "concurrency"],
-        "swift-testing-pro": ["swift_testing", "tests", "swift_tests"]
-      },
-      "ios_bundle": {
-        "description": "Load all iOS/Swift skills together for full-stack native Apple development",
-        "trigger": ["ios_full_stack", "all_ios_skills", "swift_native_full", "apple_platform_full"],
-        "skills": [
-          "ios-development",
-          "ios-app-store-compliance",
-          "swiftui-pro",
-          "swiftdata-pro",
-          "swift-concurrency-pro",
-          "swift-testing-pro",
-          "add-component",
-          "build-feature",
-          "explore-recipes"
-        ]
+        "expo-docs": ["expo_apis", "expo_behavior"]
       }
     },
     "review_audit": {
@@ -72,6 +53,14 @@
         "redesign-skill": ["improve_existing_ui", "upgrade_interface"]
       },
       "secondary": {
+        "design-md-gallery": {
+          "only_after": ["taste-skill", "redesign-skill"],
+          "never_alone": true
+        },
+        "design-systems-reference": {
+          "only_after": ["taste-skill", "redesign-skill"],
+          "never_alone": true
+        },
         "soft-skill": {
           "only_after": ["taste-skill", "redesign-skill"],
           "never_alone": true
@@ -94,18 +83,115 @@
   },
 
   "core_principles": [
+    {"id": "test_driven_programming", "rule": "write_or_update_a_failing_behavior_test_before_production_changes_when_changing_behavior_or_fixing_defects"},
     {"id": "simplicity_first", "rule": "smallest_change_that_fully_solves"},
     {"id": "no_laziness", "rule": "find_root_causes_no_papering_over"},
     {"id": "minimal_impact", "rule": "touch_only_what_materially_needs_change"}
   ],
+  "test_driven_programming": {
+    "default": "test_first_for_behavior_changes_and_defect_fixes",
+    "workflow": [
+      "define_observable_behavior_and_edge_cases",
+      "write_or_update_the_narrowest_meaningful_failing_test",
+      "make_the_smallest_production_change_to_pass",
+      "run_the_relevant_test_target",
+      "report_tests_run_or_explain_why_not_run"
+    ],
+    "exceptions": [
+      "documentation_only_changes",
+      "mechanical_formatting_or_renames_with_no_behavior_change",
+      "test_first_impractical_because_no_runnable_harness_or_external_constraint"
+    ],
+    "exception_requirement": "state_the_reason_and_use_the_smallest_alternative_verification",
+    "quality_bar": "test_user_visible_behavior_and_regression_risk_not_implementation_details"
+  },
+  "supply_chain_hardening": {
+    "dependency_updates": "explicit_user_request_only",
+    "prefer_local_pinned_binaries": true,
+    "forbid_runtime_executors": ["npx", "pnpm dlx", "bunx", "uvx", "curl | sh", "@latest"],
+    "forbid_release_check_commands": [
+      "npm outdated",
+      "pnpm outdated",
+      "bun outdated",
+      "npm-check-updates",
+      "npm view"
+    ],
+    "safe_install_commands": {
+      "bun": "bun install --frozen-lockfile --minimum-release-age 604800",
+      "pnpm": "pnpm install --frozen-lockfile --ignore-scripts",
+      "yarn": "yarn install --frozen-lockfile --ignore-scripts",
+      "npm": "npm ci --ignore-scripts"
+    }
+  },
 
   "delegation": {
+    "default_layer": "native_subagents",
     "delegate_by": "task_intent",
     "delegate_by_not": "skill_name",
     "max_implementation_specialists": 1,
     "optional_auditor": true,
     "one_subagent_per_skill": false,
-    "capability_clusters_only": true
+    "capability_clusters_only": true,
+    "main_agent_may_invoke_native_subagents_without_user_prompt": true,
+    "ai_bridge_explicit_only": true,
+    "ai_bridge_requires_named_target": true,
+    "ai_bridge_auto_routing": "explicit_user_request_only"
+  },
+
+  "subagent_routing": {
+    "default": "native_subagents_first",
+    "main_agent_final_synthesis": true,
+    "route_by_task_intent": {
+      "codebase_mapping": "cartographer",
+      "code_review": "code-reviewer",
+      "backend": "backend-architect",
+      "frontend": "frontend-engineer",
+      "greenfield_ui": "design-engineer",
+      "redesign": "design-engineer",
+      "ui_audit": "ui-auditor",
+      "security_review": "security-auditor",
+      "compliance_or_seo": "compliance-seo-auditor",
+      "mobile": "mobile-engineer"
+    },
+    "when_to_use": [
+      "specialist_focus",
+      "parallel_independent_work",
+      "fresh_review",
+      "context_isolation",
+      "large_read_only_exploration",
+      "verification_after_implementation"
+    ],
+    "when_not_to_use": [
+      "tiny_single_step_tasks",
+      "tightly_coupled_edits_that_would_conflict",
+      "final_review_reserved_for_main_agent"
+    ]
+  },
+
+  "ai_bridge": {
+    "role": "backup_cross_tool_escape_hatch",
+    "entrypoints": ["ai-delegate", "ai-dispatch"],
+    "use_only_when_user_explicitly_requests_bridge": true,
+    "requires_named_target": true,
+    "allowed_targets": ["codex", "cursor", "opencode", "claude", "goose", "gemini", "aider", "amp", "cline", "droid"],
+    "auto_target_allowed": "only_when_user_explicitly_requests_auto_bridge_routing",
+    "native_subagents_first": true,
+    "if_target_missing": "ask_user_which_coding_tool_to_open"
+  },
+
+  "skill_loading_disclosure": {
+    "canonical_skills_root": "/Users/mikhail/.agents/skills",
+    "read_before_substantive_work": "Read SKILL.md for every skill in the active stack: default_stack, task_mapping additions, skill_triggers, and for subagents every SKILL.md path listed in that subagent file.",
+    "disclosure": {
+      "when": "first_substantive_message_in_thread_or_start_of_subagent_run",
+      "format": "list_skill_directory_names_only",
+      "must_include": "every_skill_whose_SKILL_md_was_read_for_this_turn_or_run"
+    },
+    "on_missing_skill_file": "name_the_path_then_fallback_to_AGENTS_md_and_this_policy",
+    "subagents": {
+      "must_read": "all_canonical_SKILL_md_paths_listed_in_that_subagent_before_substantive_output",
+      "must_disclose": "same_disclosure_rules_as_main_agent"
+    }
   },
 
   "shared_skills": [
@@ -113,18 +199,16 @@
     "backend-architecture",
     "cartographer",
     "coding-standards",
+    "design-systems-reference",
     "expo-docs",
     "frontend-web-development",
     "ios-app-store-compliance",
     "ios-development",
     "output-skill",
+    "design-md-gallery",
     "redesign-skill",
     "security-vulnerability-mitigation",
     "soft-skill",
-    "swift-concurrency-pro",
-    "swift-testing-pro",
-    "swiftdata-pro",
-    "swiftui-pro",
     "taste-skill",
     "technical-seo",
     "testing-strategies",
@@ -134,7 +218,12 @@
     "web-design-guidelines",
     "website-compliance"
   ],
-  "ambient_skills": ["ai-interaction-workflow", "coding-standards", "testing-strategies", "output-skill"],
+  "ambient_skills": [
+    "ai-interaction-workflow",
+    "coding-standards",
+    "testing-strategies",
+    "output-skill"
+  ],
   "subagents": {
     "enabled": true,
     "directory": "agents",
@@ -161,26 +250,15 @@
     "compliance-seo-auditor": {"mode": "audit", "skills": ["website-compliance", "technical-seo", "web-design-guidelines"]},
     "design-engineer": {
       "mode": "implementation",
-      "skills": ["taste-skill", "redesign-skill", "soft-skill", "frontend-web-development", "web-design-guidelines"]
+      "skills": ["taste-skill", "redesign-skill", "design-systems-reference", "soft-skill", "frontend-web-development", "web-design-guidelines"]
     },
     "frontend-engineer": {
       "mode": "implementation",
-      "skills": ["frontend-web-development", "vercel-react-best-practices", "vercel-composition-patterns", "web-design-guidelines", "coding-standards", "testing-strategies"]
+      "skills": ["frontend-web-development", "design-systems-reference", "vercel-react-best-practices", "vercel-composition-patterns", "web-design-guidelines", "coding-standards", "testing-strategies"]
     },
     "mobile-engineer": {
       "mode": "implementation",
-      "skills": [
-        "ios-development",
-        "ios-app-store-compliance",
-        "swiftui-pro",
-        "swiftdata-pro",
-        "swift-concurrency-pro",
-        "swift-testing-pro",
-        "vercel-react-native-skills",
-        "expo-docs",
-        "coding-standards",
-        "testing-strategies"
-      ]
+      "skills": ["ios-development", "ios-app-store-compliance", "vercel-react-native-skills", "expo-docs", "coding-standards", "testing-strategies"]
     },
     "security-auditor": {"mode": "audit", "skills": ["security-vulnerability-mitigation", "backend-architecture", "website-compliance"]},
     "ui-auditor": {"mode": "audit", "skills": ["web-design-guidelines", "frontend-web-development", "coding-standards"]}
@@ -189,7 +267,7 @@
     "peer_roots": [
       {"name": "cursor", "root": "/Users/mikhail/.cursor", "skills_dir": "skills", "subagents": {"enabled": true, "directory": ".cursor/agents"}},
       {"name": "opencode", "root": "/Users/mikhail/.config/opencode", "skills_dir": "skills", "subagents": {"enabled": true, "directory": "agents"}},
-      {"name": "codex", "root": "/Users/mikhail/.codex", "skills_dir": "skills", "subagents": {"enabled": false, "directory": null}},
+      {"name": "codex", "root": "/Users/mikhail/.codex", "skills_dir": "skills", "subagents": {"enabled": true, "directory": "agents"}},
       {"name": "antigravity", "root": "/Users/mikhail/.gemini/antigravity", "skills_dir": "skills", "subagents": {"enabled": true, "directory": ".cursor/agents"}}
     ]
   }

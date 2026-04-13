@@ -12,6 +12,7 @@ Use this as the primary design mode for new interfaces.
 - Pair with `frontend-web-development` for implementation structure.
 - Pair with `vercel-react-best-practices` when the UI is React or Next.js.
 - Add `soft-skill` only if you need an extra visual-art-direction pass.
+- Add `design-systems-reference` for component pattern guidance, design token references, and license checks.
 - Do not use this as the main skill for incremental cleanup of an existing UI. Use `redesign-skill` for that.
 
 ## 1. ACTIVE BASELINE CONFIGURATION
@@ -32,13 +33,13 @@ Unless the user explicitly specifies a different stack, adhere to these structur
 * **Styling Policy:** Use Tailwind CSS (v3/v4) for 90% of styling.
  * **TAILWIND VERSION LOCK:** Check `package.json` first. Do not use v4 syntax in v3 projects.
  * **T4 CONFIG GUARD:** For v4, do NOT use `tailwindcss` plugin in `postcss.config.js`. Use `@tailwindcss/postcss` or the Vite plugin.
-* **ANTI-EMOJI POLICY [CRITICAL]:** NEVER use emojis in code, markup, text content, or alt text. Replace symbols with high-quality icons (Radix, Phosphor) or clean SVG primitives. Emojis are BANNED.
+* **ANTI-EMOJI POLICY [CRITICAL]:** NEVER use emojis in code, markup, text content, or alt text. Replace symbols with high-quality icons (Phosphor, Hugeicons, Tabler, Radix) or clean SVG primitives. Emojis are BANNED.
 * **Responsiveness & Spacing:**
  * Standardize breakpoints (`sm`, `md`, `lg`, `xl`).
  * Contain page layouts using `max-w-[1400px] mx-auto` or `max-w-7xl`.
  * **Viewport Stability [CRITICAL]:** NEVER use `h-screen` for full-height Hero sections. ALWAYS use `min-h-[100dvh]` to prevent catastrophic layout jumping on mobile browsers (iOS Safari).
  * **Grid over Flex-Math:** NEVER use complex flexbox percentage math (`w-[calc(33%-1rem)]`). ALWAYS use CSS Grid (`grid grid-cols-1 md:grid-cols-3 gap-6`) for reliable structures.
-* **Icons:** You MUST use exactly `@phosphor-icons/react` or `@radix-ui/react-icons` as the import paths (check installed version). Standardize `strokeWidth` globally (e.g., exclusively use `1.5` or `2.0`).
+* **Icons:** Check `package.json` to see what's already installed. Prefer installed libraries. Preferred React icon sets are `@phosphor-icons/react`, Hugeicons (`@hugeicons/react` with `@hugeicons/core-free-icons`), and `@tabler/icons-react`. Only use `@radix-ui/react-icons` as fallback. **Never default to `lucide-react` without checking alternatives.** Standardize `strokeWidth` globally (e.g., exclusively use `1.5` or `2.0`).
 
 
 ## 3. DESIGN ENGINEERING DIRECTIVES (Bias Correction)

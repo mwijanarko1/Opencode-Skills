@@ -1,23 +1,26 @@
 # OpenCode Skills Setup
 
-Shared agent configuration for OpenCode, Cursor, Codex, and Antigravity. Use this as a reference or copy into your own config.
+Snapshot of the shared `~/.agents` configuration for OpenCode, Cursor, Codex, and Antigravity. Use this folder as a portable reference, or copy/symlink the pieces into a tool-specific config root.
 
 ## Quick Setup
 
 1. **Clone this repo** (or copy the contents).
 
-2. **For OpenCode**: Copy or symlink into `~/.config/opencode/`:
+2. **For OpenCode**: Copy the snapshot into `~/.config/opencode/`:
    ```bash
-   cp -r agents command skills AGENTS.md agent-policy.json ~/.config/opencode/
+   cp -R agents command docs skills AGENTS.md agent-policy.json .skill-lock.json ~/.config/opencode/
    mkdir -p ~/.config/opencode/scripts
-   cp scripts/validate_agent_policy.py ~/.config/opencode/scripts/
+   cp scripts/*.py ~/.config/opencode/scripts/
    ```
 
-3. **For Cursor**: Copy `AGENTS.md` and `agent-policy.json` into your project's `.cursor/` or `~/.cursor/`. Symlink or copy `skills/` to `~/.cursor/skills/` or `~/.agents/skills/`.
-
-4. **Validate** (optional):
+3. **For canonical local use**: Prefer keeping `~/.agents` as the source of truth and symlinking peer roots with:
    ```bash
-   AGENTS_ROOT=/path/to/this/repo python scripts/validate_agent_policy.py
+   python3 ~/.agents/scripts/sync_peer_roots.py
+   ```
+
+4. **Validate the canonical setup**:
+   ```bash
+   python3 ~/.agents/scripts/validate_agent_policy.py
    ```
 
 ## Contents
@@ -25,12 +28,19 @@ Shared agent configuration for OpenCode, Cursor, Codex, and Antigravity. Use thi
 | Path | Purpose |
 |------|---------|
 | `AGENTS.md` | Root instructions for skill composition |
-| `agent-policy.json` | Machine-readable rules, triggers, task mapping |
-| `agents/` | Clustered specialist subagents |
-| `command/` | Task-specific commands (e.g. review) |
-| `skills/` | Skill library (foundation, product, iOS, design) |
+| `agent-policy.json` | Machine-readable rules, triggers, task mapping, delegation, sync, and supply-chain defaults |
+| `.skill-lock.json` | Skill inventory lock from the canonical tree |
+| `agents/` | Native specialist subagents copied from `~/.agents/agents` |
+| `command/` | OpenCode task commands |
+| `docs/CODEBASE_MAP.md` | Navigation map for this packaged setup |
+| `skills/` | Full visible skill library copied from `~/.agents/skills` |
+| `skills/.system/` | System skills bundled with Codex |
 | `scripts/validate_agent_policy.py` | Policy validator |
+| `scripts/sync_peer_roots.py` | Symlink sync helper for local peer roots |
 
-## iOS Skills
+## Included Snapshot
 
-Includes SwiftUI Pro, SwiftData Pro, Swift Concurrency Pro, Swift Testing Pro. Use "all iOS skills" or "ios full stack" to load the bundle.
+- 57 visible skill directories.
+- 2 system skills under `skills/.system/`.
+- 13 native subagent prompts, including game-focused agents.
+- Current shared policy with TDD, skill disclosure, native subagent routing, AI bridge constraints, and supply-chain defaults.

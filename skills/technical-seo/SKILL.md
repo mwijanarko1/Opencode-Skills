@@ -1,6 +1,6 @@
 ---
 name: technical-seo
-description: Practical technical SEO guide for crawlability, indexation, site structure, canonicals, performance, mobile, metadata, and structured data. Use when optimizing sites for search engines, implementing SEO, auditing technical SEO, or when the user asks about sitemaps, robots.txt, Core Web Vitals, or schema markup.
+description: Practical technical SEO guide for crawlability, indexation, site structure, canonicals, performance, mobile, metadata, structured data, and safe LLM-readable surfaces (`/llms.txt` + Markdown companions) without cloaking.
 ---
 
 # Technical SEO
@@ -111,3 +111,170 @@ Work in this order:
 ## Stack-specific implementation
 
 When the user shares their stack (Next.js, WordPress, custom Node, etc.) and site type (blog, SaaS, ecommerce), turn this into a concrete implementation checklist tailored to that setup.
+
+## 10. Safe LLM-readable surface (`/llms.txt` and Markdown companions)
+
+Use this when adding a machine-readable publishing layer without cloaking.
+
+### Objective
+
+Add a small, explicit machine-readable surface that:
+
+- Keeps canonical HTML pages as the primary user-facing and indexable pages
+- Publishes clean text or Markdown companions for important public routes
+- Exposes a root `/llms.txt` discovery document
+- Avoids crawler-specific content substitution
+
+### Non-negotiables
+
+- Do not use cloaking, bot fingerprinting, hidden instructions, or crawler-specific branching
+- Do not detect bots and serve them different content
+- Machine-readable pages must preserve the same meaning as human-facing pages
+- Do not let companion pages compete with canonical pages in search
+- Do not fork content ownership into separate manual copies unless unavoidable
+
+### Discovery and URL pattern
+
+- Add `/llms.txt` at the site root
+- Add one machine-readable companion for each selected important public page
+- Use stable, explicit URLs such as `/llms/home.md`, `/llms/about.md`, `/llms/pricing.md`
+- Link to `/llms.txt` in a public low-prominence location such as the footer
+- Keep companion pages crawlable and publicly discoverable
+- Keep companion pages out of the primary sitemap when they are `noindex`
+
+### Content ownership model
+
+- Inventory highest-value public routes first
+- Identify which routes are static vs CMS/database-backed
+- Reuse existing server-side content loaders and shared constants
+- Move repeated page copy into shared constants where practical
+- Centralize legal/policy text in one structured source of truth
+- Filter hidden or unavailable content exactly as the canonical site does
+- Use one descriptor table listing every machine-readable document
+
+### Route behavior and headers
+
+- `/llms.txt` should return `Content-Type: text/plain; charset=utf-8`
+- Companion `.md` pages should return `Content-Type: text/markdown; charset=utf-8`
+- Companion `.md` pages should return `X-Robots-Tag: noindex, follow`
+- Keep static machine-readable routes static where possible
+- Use dynamic rendering only where companion content depends on live data
+- Keep formatting ownership in a shared generator layer; keep headers in route handlers
+
+### Markdown content rules
+
+For every companion document:
+
+- Start with exactly one `#` heading
+- Include the canonical page URL near the top
+- Use plain factual prose
+- Preserve stable section order
+- Include essential links back to canonical pages
+- Keep output small and easy to parse
+
+Avoid:
+
+- Model-targeted instructions
+- Marketing claims not present on the canonical page
+- Alternate claims or hidden content not visible on the site
+
+### Suggested companion page coverage
+
+Home page:
+
+- Site name
+- One-line summary
+- Address and opening hours where relevant
+- Key public links
+- Short summaries of core sections (menu, reviews, contact, etc.)
+
+Product/service pages:
+
+- Short intro
+- Key features/services
+- Public pricing where available
+- Important disclaimers
+- Related canonical links
+
+Menu/catalog pages:
+
+- Category headings
+- Visible items only
+- Prices and short descriptions
+- Availability filtering aligned with the canonical page
+
+Reviews/testimonials:
+
+- Featured review list where applicable
+- Full review text only if already publicly visible
+- Canonical links back to review page/platform profile
+
+Privacy/terms:
+
+- Generate from a structured legal source, not separate hand-maintained copies
+
+### SEO and crawl safety for companion surfaces
+
+- Keep canonical HTML pages `index, follow`
+- Keep companion pages `noindex, follow`
+- Confirm `robots.txt` does not block companion routes
+- Keep Googlebot and other allowed crawlers able to fetch both canonical and companion URLs
+- Keep important metadata, canonicals, and structured data early in canonical HTML
+- Keep canonical HTML lean; avoid large inline base64 blobs and excessive inline CSS/JS
+
+### Testing and verification requirements
+
+Add tests for:
+
+- Descriptor-table coverage
+- `llms.txt` generation content
+- Markdown generation output
+- Filtering behavior for hidden/unavailable content
+- Route headers (`Content-Type`, `X-Robots-Tag`) and response bodies
+- Regression coverage if shared/legal content was refactored
+
+Minimum verification steps:
+
+1. Run the test suite
+2. Run a production build
+3. Fetch `/llms.txt`
+4. Fetch one or more `.md` companion pages
+5. Confirm `Content-Type` values
+6. Confirm `X-Robots-Tag: noindex, follow` on companions
+7. Confirm the public discovery link (for example, footer link) works
+
+### Acceptance criteria
+
+Implementation is complete when:
+
+- `/llms.txt` exists and lists intended companion URLs
+- Every selected public page has a corresponding machine-readable companion
+- Companion pages are readable without CSS or JS
+- Companion pages are `noindex, follow`
+- Canonical pages remain the only indexable versions
+- Shared content sources are reused where practical
+- No deceptive crawler-specific behavior exists
+- Tests and production build pass
+
+### Optional hardening for larger sites
+
+- Add an HTML byte-budget check for key canonical pages
+- Add a test that critical metadata appears near top of rendered HTML
+- Add content-diff checks for critical facts between canonical and companion pages
+- Add CI verification that `/llms.txt` stays synced with descriptor table
+
+### Implementation prompt template
+
+```md
+Implement a safe machine-readable surface for this website.
+
+Requirements:
+- add `/llms.txt`
+- add Markdown companion routes for main public pages
+- keep canonical HTML pages as the only indexable versions
+- mark companion pages `noindex, follow`
+- do not use bot detection, cloaking, hidden instructions, or crawler-specific content
+- centralize shared copy and legal content where practical
+- add tests for generators and route headers
+- run the test suite and production build
+```

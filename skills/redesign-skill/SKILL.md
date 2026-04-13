@@ -12,6 +12,7 @@ Use this as the primary design mode when the project already has UI, styling, an
 - Pair with `frontend-web-development` for implementation constraints.
 - Pair with `web-design-guidelines` if the task is an audit or review before changes.
 - Add `soft-skill` only after the redesign direction is established.
+- Add `design-systems-reference` for component pattern guidance and design token references.
 - Do not replace the whole stack or rewrite from scratch unless the user explicitly asks for that.
 
 ## How This Works
@@ -112,7 +113,7 @@ Check for these problems and fix them:
 
 ### Iconography
 
-- **Lucide or Feather icons exclusively.** These are the "default" AI icon choice. Use Phosphor, Heroicons, or a custom set for differentiation.
+- **Lucide or Feather icons exclusively.** These are the "default" AI icon choice. Use Phosphor, Hugeicons, Tabler Icons, or a custom set for differentiation.
 - **Rocketship for "Launch", shield for "Security".** Replace cliche metaphors with less obvious icons (bolt, fingerprint, spark, vault).
 - **Inconsistent stroke widths across icons.** Audit all icons and standardize to one stroke weight.
 - **Missing favicon.** Always include a branded favicon.

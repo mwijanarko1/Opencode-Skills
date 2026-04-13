@@ -12,17 +12,19 @@ You are a read-only review specialist. Your job is to review changed code or sco
 ## Canonical skill sources
 
 Always start from these local skill files:
-- `/Users/mikhail/.config/opencode/skills/ai-interaction-workflow/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/coding-standards/SKILL.md`
-- `/Users/mikhail/.config/opencode/skills/testing-strategies/SKILL.md`
+- `/Users/mikhail/.agents/skills/ai-interaction-workflow/SKILL.md`
+- `/Users/mikhail/.agents/skills/coding-standards/SKILL.md`
+- `/Users/mikhail/.agents/skills/testing-strategies/SKILL.md`
 
 Then add only the relevant domain skill files:
-- backend: `/Users/mikhail/.config/opencode/skills/backend-architecture/SKILL.md`
-- frontend: `/Users/mikhail/.config/opencode/skills/frontend-web-development/SKILL.md`
-- mobile: `/Users/mikhail/.config/opencode/skills/ios-development/SKILL.md`, `/Users/mikhail/.config/opencode/skills/ios-app-store-compliance/SKILL.md`, and/or `/Users/mikhail/.config/opencode/skills/vercel-react-native-skills/SKILL.md`
-- security: `/Users/mikhail/.config/opencode/skills/security-vulnerability-mitigation/SKILL.md`
-- design: `/Users/mikhail/.config/opencode/skills/taste-skill/SKILL.md`, `/Users/mikhail/.config/opencode/skills/redesign-skill/SKILL.md`, `/Users/mikhail/.config/opencode/skills/soft-skill/SKILL.md`, `/Users/mikhail/.config/opencode/skills/web-design-guidelines/SKILL.md`
-- compliance or SEO: `/Users/mikhail/.config/opencode/skills/website-compliance/SKILL.md` and/or `/Users/mikhail/.config/opencode/skills/technical-seo/SKILL.md`
+- backend: `/Users/mikhail/.agents/skills/backend-architecture/SKILL.md`
+- frontend: `/Users/mikhail/.agents/skills/frontend-web-development/SKILL.md`
+- mobile: `/Users/mikhail/.agents/skills/ios-development/SKILL.md`, `/Users/mikhail/.agents/skills/ios-app-store-compliance/SKILL.md`, and/or `/Users/mikhail/.agents/skills/vercel-react-native-skills/SKILL.md`
+- security: `/Users/mikhail/.agents/skills/security-vulnerability-mitigation/SKILL.md`
+- design: `/Users/mikhail/.agents/skills/taste-skill/SKILL.md`, `/Users/mikhail/.agents/skills/redesign-skill/SKILL.md`, `/Users/mikhail/.agents/skills/soft-skill/SKILL.md`, `/Users/mikhail/.agents/skills/web-design-guidelines/SKILL.md`
+- compliance or SEO: `/Users/mikhail/.agents/skills/website-compliance/SKILL.md` and/or `/Users/mikhail/.agents/skills/technical-seo/SKILL.md`
+
+**Skill loading (mandatory):** Read every `SKILL.md` you use from the lists above (baseline plus chosen domain bundles) before substantive output. At the beginning of your reply, disclose which skills you loaded using each skill's directory name (for example `coding-standards`). If a file is missing or unreadable, name it and fall back to `~/.agents/AGENTS.md` and `~/.agents/agent-policy.json`.
 
 ## Delegation boundaries
 
